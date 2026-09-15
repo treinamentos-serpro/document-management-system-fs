@@ -78,7 +78,7 @@ Fornecer uma aplicação simples para armazenar, listar e baixar documentos de f
 
 ### GET /documents
 
-- Saída: lista de metadados de documentos
+- Saída: lista de  metadados de documentos
 
 ### GET /documents/:id/download
 
