@@ -23,6 +23,12 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
+// Tratamento centralizado de erros das rotas de documentos.
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+  res.status(statusCode).json({ message: err.message || 'Erro interno do servidor.' });
+});
+
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`DMS backend ouvindo na porta ${PORT}`);
