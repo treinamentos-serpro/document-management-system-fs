@@ -18,6 +18,14 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+
+// Cabeçalhos básicos de segurança para as respostas da API.
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  next();
+});
+
 app.use(documentRoutes);
 
 app.get('/health', (req, res) => {

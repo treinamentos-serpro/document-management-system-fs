@@ -19,14 +19,14 @@ export default function DocumentList({ documents, onDownload }) {
           </tr>
         </thead>
         <tbody>
-          {documents.map((document) => (
-            <tr key={document.id}>
-              <td style={{ padding: '0.5rem', borderBottom: '1px solid #f0f0f0' }}>{document.originalName}</td>
-              <td style={{ padding: '0.5rem', borderBottom: '1px solid #f0f0f0' }}>{document.owner}</td>
-              <td style={{ padding: '0.5rem', borderBottom: '1px solid #f0f0f0' }}>{formatSize(document.size)}</td>
-              <td style={{ padding: '0.5rem', borderBottom: '1px solid #f0f0f0' }}>{formatDate(document.uploadedAt)}</td>
+          {documents.map((documentItem) => (
+            <tr key={documentItem.id}>
+              <td style={{ padding: '0.5rem', borderBottom: '1px solid #f0f0f0' }}>{documentItem.originalName}</td>
+              <td style={{ padding: '0.5rem', borderBottom: '1px solid #f0f0f0' }}>{documentItem.owner}</td>
+              <td style={{ padding: '0.5rem', borderBottom: '1px solid #f0f0f0' }}>{formatSize(documentItem.size)}</td>
+              <td style={{ padding: '0.5rem', borderBottom: '1px solid #f0f0f0' }}>{formatDate(documentItem.uploadedAt)}</td>
               <td style={{ padding: '0.5rem', borderBottom: '1px solid #f0f0f0' }}>
-                <DownloadButton document={document} onDownload={onDownload} />
+                <DownloadButton documentItem={documentItem} onDownload={onDownload} />
               </td>
             </tr>
           ))}

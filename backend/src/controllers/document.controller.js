@@ -1,7 +1,4 @@
-const fs = require('node:fs');
-const path = require('node:path');
 const documentService = require('../services/document.service');
-const { STORAGE_DIR } = require('../config/storage.config');
 
 function uploadDocument(req, res, next) {
   try {
@@ -14,7 +11,7 @@ function uploadDocument(req, res, next) {
 
 function listDocuments(req, res, next) {
   try {
-    const documents = documentService.listDocuments();
+    const documents = documentService.listDocuments(req.query.owner);
     res.status(200).json(documents);
   } catch (error) {
     next(error);
@@ -23,21 +20,8 @@ function listDocuments(req, res, next) {
 
 function downloadDocument(req, res, next) {
   try {
-    const document = documentService.getDocumentById(req.params.id);
-
-    if (!document) {
-      res.status(404).json({ message: 'Documento não encontrado.' });
-      return;
-    }
-
-    const filePath = path.join(STORAGE_DIR, document.storedName);
-
-    if (!fs.existsSync(filePath)) {
-      res.status(404).json({ message: 'Arquivo não encontrado no armazenamento.' });
-      return;
-    }
-
-    res.download(filePath, document.originalName);
+    const { filePath, originalName } = documentService.getDownloadTarget(req.params.id);
+    res.download(filePath, originalName);
   } catch (error) {
     next(error);
   }

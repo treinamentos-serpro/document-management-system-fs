@@ -1,8 +1,8 @@
-export default function DownloadButton({ document, onDownload }) {
+export default function DownloadButton({ documentItem, onDownload }) {
   return (
     <button
       type="button"
-      onClick={() => onDownload(document)}
+      onClick={() => onDownload(documentItem)}
       style={{
         padding: '0.5rem 0.8rem',
         border: 'none',

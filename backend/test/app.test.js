@@ -71,3 +71,38 @@ test('deve retornar 404 ao tentar baixar um documento inexistente', async () => 
     assert.strictEqual(response.status, 404, 'download de documento inexistente deve falhar');
   });
 });
+
+test('deve rejeitar upload de tipo de arquivo não permitido', async () => {
+  await withServer(async (port) => {
+    const formData = new FormData();
+    formData.append('file', new Blob(['echo oi'], { type: 'application/x-sh' }), 'script.sh');
+    formData.append('owner', 'user-001');
+
+    const uploadResponse = await fetch(`http://127.0.0.1:${port}/upload`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    assert.strictEqual(uploadResponse.status, 400, 'tipo de arquivo não permitido deve ser rejeitado');
+  });
+});
+
+test('deve filtrar a listagem por owner quando informado', async () => {
+  await withServer(async (port) => {
+    const formData = new FormData();
+    formData.append('file', new Blob(['conteúdo'], { type: 'text/plain' }), 'outro.txt');
+    formData.append('owner', 'user-002');
+
+    const uploadResponse = await fetch(`http://127.0.0.1:${port}/upload`, {
+      method: 'POST',
+      body: formData,
+    });
+    const uploaded = await uploadResponse.json();
+
+    const listResponse = await fetch(`http://127.0.0.1:${port}/documents?owner=user-002`);
+    const documents = await listResponse.json();
+
+    assert.ok(documents.every((document) => document.owner === 'user-002'), 'listagem filtrada só deve conter o owner informado');
+    assert.ok(documents.some((document) => document.id === uploaded.id), 'documento enviado deve constar na listagem filtrada');
+  });
+});

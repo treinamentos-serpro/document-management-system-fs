@@ -21,9 +21,9 @@ export default function App() {
     loadDocuments();
   }, [loadDocuments]);
 
-  async function handleDownload(document) {
+  async function handleDownload(documentItem) {
     try {
-      await downloadDocument(document.id, document.originalName);
+      await downloadDocument(documentItem.id, documentItem.originalName);
     } catch (downloadError) {
       setError(downloadError.message || 'Não foi possível baixar o documento.');
     }
