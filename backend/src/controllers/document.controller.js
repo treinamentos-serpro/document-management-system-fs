@@ -1,8 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const documentService = require('../services/document.service');
-
-const STORAGE_DIR = path.resolve(__dirname, '../../storage');
+const { STORAGE_DIR } = require('../config/storage.config');
 
 function uploadDocument(req, res, next) {
   try {

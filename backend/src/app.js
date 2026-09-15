@@ -11,6 +11,7 @@
 // usando multer com diskStorage. Não utilize provedores externos.
 
 const express = require('express');
+const multer = require('multer');
 const documentRoutes = require('./routes/document.routes');
 
 const app = express();
@@ -25,6 +26,11 @@ app.get('/health', (req, res) => {
 
 // Tratamento centralizado de erros das rotas de documentos.
 app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    res.status(400).json({ message: err.message });
+    return;
+  }
+
   const statusCode = err.statusCode || 500;
   res.status(statusCode).json({ message: err.message || 'Erro interno do servidor.' });
 });
