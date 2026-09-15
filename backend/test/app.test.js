@@ -87,6 +87,43 @@ test('deve rejeitar upload de tipo de arquivo não permitido', async () => {
   });
 });
 
+test('deve rejeitar upload sem arquivo', async () => {
+  await withServer(async (port) => {
+    const formData = new FormData();
+    formData.append('owner', 'user-001');
+
+    const uploadResponse = await fetch(`http://127.0.0.1:${port}/upload`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    assert.strictEqual(uploadResponse.status, 400, 'upload sem arquivo deve ser rejeitado');
+  });
+});
+
+test('deve rejeitar upload sem owner', async () => {
+  await withServer(async (port) => {
+    const formData = new FormData();
+    formData.append('file', new Blob(['conteúdo'], { type: 'text/plain' }), 'sem-owner.txt');
+
+    const uploadResponse = await fetch(`http://127.0.0.1:${port}/upload`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    assert.strictEqual(uploadResponse.status, 400, 'upload sem owner deve ser rejeitado');
+  });
+});
+
+test('deve retornar lista vazia quando não há documentos para o owner informado', async () => {
+  await withServer(async (port) => {
+    const listResponse = await fetch(`http://127.0.0.1:${port}/documents?owner=owner-inexistente`);
+    assert.strictEqual(listResponse.status, 200, 'listagem deve retornar 200');
+    const documents = await listResponse.json();
+    assert.deepStrictEqual(documents, [], 'listagem deve retornar array vazio para owner sem documentos');
+  });
+});
+
 test('deve filtrar a listagem por owner quando informado', async () => {
   await withServer(async (port) => {
     const formData = new FormData();
