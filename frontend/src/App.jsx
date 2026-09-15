@@ -1,20 +1,44 @@
-// Seed do componente raiz do Document Management System.
-//
-// Este é apenas um ponto de partida mínimo. Durante o Passo 3 você vai usar o
-// Agent Mode do GitHub Copilot para construir os componentes:
-//   - components/UploadComponent
-//   - components/DocumentList
-//   - components/DownloadButton
-// e o serviço services/ que consome a API do backend via fetch.
+import { useCallback, useEffect, useState } from 'react';
+import UploadComponent from './components/UploadComponent';
+import DocumentList from './components/DocumentList';
+import { listDocuments, downloadDocument } from './services/documentService';
 
 export default function App() {
+  const [documents, setDocuments] = useState([]);
+  const [error, setError] = useState('');
+
+  const loadDocuments = useCallback(async () => {
+    try {
+      setError('');
+      const items = await listDocuments();
+      setDocuments(items);
+    } catch (loadError) {
+      setError(loadError.message || 'Não foi possível carregar os documentos.');
+    }
+  }, []);
+
+  useEffect(() => {
+    loadDocuments();
+  }, [loadDocuments]);
+
+  async function handleDownload(document) {
+    try {
+      await downloadDocument(document.id, document.originalName);
+    } catch (downloadError) {
+      setError(downloadError.message || 'Não foi possível baixar o documento.');
+    }
+  }
+
   return (
-    <main style={{ fontFamily: 'system-ui, sans-serif', padding: '2rem' }}>
-      <h1>Document Management System</h1>
-      <p>
-        Seed do frontend. Construa a interface durante o Passo 3 usando o Agent
-        Mode do GitHub Copilot.
-      </p>
+    <main style={{ fontFamily: 'system-ui, sans-serif', padding: '2rem', maxWidth: '1100px', margin: '0 auto' }}>
+      <h1 style={{ marginBottom: '1.5rem' }}>Document Management System</h1>
+      <UploadComponent onUploadSuccess={loadDocuments} />
+
+      {error ? (
+        <p style={{ marginBottom: '1rem', color: '#b91c1c' }}>{error}</p>
+      ) : null}
+
+      <DocumentList documents={documents} onDownload={handleDownload} />
     </main>
   );
 }
